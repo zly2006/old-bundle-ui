@@ -6,8 +6,10 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.BundleTooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.math.Fraction;
 import org.spongepowered.asm.mixin.Final;
@@ -59,6 +61,10 @@ public class MixinBundleTooltipComponent implements TooltipComponent {
                 this.drawSlot(n, o, k++, bl, context, textRenderer);
             }
         }
+
+        if (!this.bundleContents.isEmpty()) {
+            this.drawSelectedItemTooltip(textRenderer, context, x, y, width);
+        }
     }
 
     private void drawSlot(int x, int y, int index, boolean shouldBlock, DrawContext context, TextRenderer textRenderer) {
@@ -68,15 +74,24 @@ public class MixinBundleTooltipComponent implements TooltipComponent {
             ItemStack itemStack = this.bundleContents.get(index);
             this.draw(context, x, y, SlotSprite.SLOT);
 
-            if (index == 0) {
+            if (index == this.bundleContents.getSelectedStackIndex()) {
                 context.drawGuiTexture(RenderLayer::getGuiTextured, BUNDLE_SLOT_HIGHLIGHT_BACK_TEXTURE, x, y, 18, 18);
             }
             context.drawItem(itemStack, x + 1, y + 1, index);
             context.drawStackOverlay(textRenderer, itemStack, x + 1, y + 1);
-            if (index == 0) {
+            if (index == this.bundleContents.getSelectedStackIndex()) {
                 context.drawGuiTexture(RenderLayer::getGuiTexturedOverlay, BUNDLE_SLOT_HIGHLIGHT_FRONT_TEXTURE, x, y, 18, 18);
             }
-//            context.drawItemInSlot(RenderLayer::getGuiTextured, textRenderer, itemStack, x + 1, y + 1);
+        }
+    }
+
+    private void drawSelectedItemTooltip(TextRenderer textRenderer, DrawContext drawContext, int x, int y, int width) {
+        if (this.bundleContents.hasSelectedStack()) {
+            ItemStack itemStack = this.bundleContents.get(this.bundleContents.getSelectedStackIndex());
+            Text text = itemStack.getFormattedName();
+            int i = textRenderer.getWidth(text.asOrderedText());
+            int j = x + width / 2 - 12;
+            drawContext.drawTooltip(textRenderer, text, j - i / 2, y - 15, itemStack.get(DataComponentTypes.TOOLTIP_STYLE));
         }
     }
 
