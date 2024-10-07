@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "old-bundle-ui",
+  "version": "${version}",
+  "name": "old-bundle-ui",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "AGPL-3.0",
+  "icon": "assets/old-bundle-ui/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.github.zly2006.obui.OldBundleUI"
+    ]
+  },
+  "mixins": [
+    "old-bundle-ui.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15",
+    "fabric-language-kotlin": "*",
+    "fabric": "*",
+    "minecraft": ">=1.21.2-alpha"
+  }
+}
